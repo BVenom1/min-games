@@ -30,7 +30,7 @@
     }
 </style>
 <div class="container">
-    <canvas width="360" height="360" style="border: 2p solid white;"></canvas>
+    <canvas width="360" height="360" style="border: 2px solid white;"></canvas>
     <p>Score: <span>0</span></p>
     <div class="column">
         <button onclick="change_direction([0, -1])">U</button>
@@ -45,10 +45,11 @@
     let game_board = document.querySelector("canvas").getContext("2d");
     let score = document.querySelector("span");
 
-    let snake = [];
+    let snake;
     let fruit;
-    let direction;
-    let is_playing;
+    let direction = [];
+    let is_alive = false;
+    let is_playing = true;
 
     let draw_pixel = (color, position) => {
         game_board.fillStyle = color;
@@ -74,11 +75,12 @@
     let render = () => {
         if (!is_playing) return;
         setTimeout(() => {
+            if (direction.length > 1) direction.shift();
             // get head of snake after the move
-            let head = [snake[0][0] + direction[0], snake[0][1] + direction[1]];
+            let head = [snake[0][0] + direction[0][0], snake[0][1] + direction[0][1]];
 
             // check for collisions
-            if (head[0] < 0 || head[0] > 19 || head[1] < 0 || head[1] > 19 || snake.some(element => head[0] == element[0] && head[1] == element[1])) { is_playing = false; return; }
+            if (head[0] < 0 || head[0] > 19 || head[1] < 0 || head[1] > 19 || snake.some(element => head[0] == element[0] && head[1] == element[1])) { is_alive = false; is_playing = false; return; }
 
             // add head to snake
             snake.unshift(head);
@@ -95,17 +97,38 @@
         }, 200)
     }
 
-    let change_direction = (d) => { direction = d; }
+    let change_direction = (d) => {
+        if (d[0] != direction.at(-1)[0] && d[1] != direction.at(-1)[1]) direction.push(d);
+    }
 
     let start_game = () => {
         score.innerText = 0;
         snake = [[10, 10], [10, 11], [10, 12], [10, 13], [10, 14]];
-        direction = [0, -1];
+        direction = [[0, -1]];
         make_fruit();
         is_playing = true;
+        is_alive = true;
         render()
     }
 
-    start_game();
+    let pause_play = () => {
+        is_playing = !is_playing;
+        if (snake) render();
+    }
+
+    document.addEventListener("keydown", (e) => {
+        switch (e.key) {
+            case "Enter":
+                if (is_alive) pause_play(); else start_game(); break;
+            case "ArrowUp":
+                change_direction([0, -1]); break;
+            case "ArrowDown":
+                change_direction([0, 1]); break;
+            case "ArrowLeft":
+                change_direction([-1, 0]); break;
+            case "ArrowRight":
+                change_direction([1, 0]); break;
+        }
+    })
 
 </script>
