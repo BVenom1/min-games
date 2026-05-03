@@ -51,8 +51,7 @@
     let snake;
     let fruit;
     let direction = [];
-    let is_alive = false;
-    let is_playing = true;
+    let game_state = 0; // 0 = dead, 1 = playing, 2 = paused
 
     let draw_pixel = (color, position) => {
         game_board.fillStyle = color;
@@ -76,14 +75,14 @@
     }
 
     let render = () => {
-        if (!is_playing) return;
+        if (game_state != 1) return;
         setTimeout(() => {
             if (direction.length > 1) direction.shift();
             // get head of snake after the move
             let head = [snake[0][0] + direction[0][0], snake[0][1] + direction[0][1]];
 
             // check for collisions
-            if (head[0] < 0 || head[0] > 19 || head[1] < 0 || head[1] > 19 || snake.some(element => head[0] == element[0] && head[1] == element[1])) { is_alive = false; is_playing = false; return; }
+            if (head[0] < 0 || head[0] > 19 || head[1] < 0 || head[1] > 19 || snake.some(element => head[0] == element[0] && head[1] == element[1])) { game_state = 0; return; }
 
             // add head to snake
             snake.unshift(head);
@@ -109,25 +108,20 @@
         snake = [[10, 10], [10, 11], [10, 12], [10, 13], [10, 14]];
         direction = [[0, -1]];
         make_fruit();
-        is_playing = true;
-        is_alive = true;
+        game_state = 1;
         render()
     }
 
-    let pause_play = () => {
-        is_playing = !is_playing;
-        if (snake) render();
-    }
-
     let toggle_play_pause_start = () => {
-        if (is_alive) pause_play();
-        else start_game();
+        if (game_state == 0) start_game();
+        else if (game_state == 1) game_state = 2;
+        else { game_state = 1; render() }
     }
 
     document.addEventListener("keydown", (e) => {
         switch (e.key) {
             case "Enter":
-                toggle_play_pause_start(); break;
+                toggle_play_pause_start(); console.log(game_state); break;
             case "ArrowUp":
                 change_direction([0, -1]); break;
             case "ArrowDown":
