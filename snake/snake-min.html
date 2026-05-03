@@ -20,100 +20,108 @@
     <p>Score: <span>0</span></p>
     <div class="r">
         <div style="display:flex;flex-direction:column;align-items:center">
-            <button onclick="change_direction([0, -1])">U</button>
+            <button onclick="t([0, -1])">U</button>
             <div class="r">
-                <button onclick="change_direction([-1, 0])">L</button>
-                <button onclick="change_direction([1, 0])">R</button>
+                <button onclick="t([-1, 0])">L</button>
+                <button onclick="t([1, 0])">R</button>
             </div>
-            <button onclick="change_direction([0, 1])">D</button>
+            <button onclick="t([0, 1])">D</button>
         </div>
-        <button onclick="toggle_play_pause_start()">Play/Pause</button>
+        <button onclick="p()">Play/Pause</button>
     </div>
 </div>
 <script>
     /*
     variables and function names:
-    game_board
-    score
-    snake{element, head}
-    fruit
-    direction
-    game_state
+    game_board                      b for board
+    score                           a (placeholder)
+    snake{                          s for snake
+        element,                    e for element
+        head                        h for head
+    }
+    fruit                           f for fruit
+    direction                       d for direction
+    game_state                      g for game
     
-    draw_pixel(color, position)
-    random_number
-    make_fruit
-    render
-    change_direction(d)
-    toggle_play_pause_start
+    draw_pixel(                     x for pixel
+        color,                      c for color
+        position                    e (placeholder)
+    )
+    random_number                   r for random
+    make_fruit                      n for new
+    render                          l for loop
+    change_direction(               t for turn
+        d                           e (placeholder)
+    )
+    toggle_play_pause_start         p for play/pause
     */
-    let game_board = document.querySelector("canvas").getContext("2d");
-    let score = document.querySelector("span");
+    let b = document.querySelector("canvas").getContext("2d");
+    let a = document.querySelector("span");
 
-    let snake;
-    let fruit;
-    let direction = [];
-    let game_state = 0;
+    let s;
+    let f;
+    let d = [];
+    let g = 0;
 
-    let draw_pixel = (color, position) => {
-        game_board.fillStyle = color;
-        game_board.fillRect(position[0] * 18, position[1] * 18, 18, 18);
+    let x = (c, e) => {
+        b.fillStyle = c;
+        b.fillRect(e[0] * 18, e[1] * 18, 18, 18);
     }
 
-    let random_number = () => Math.floor(Math.random() * 20)
+    let r = () => Math.floor(Math.random() * 20)
 
-    let make_fruit = () => {
-        do fruit = [random_number(), random_number()]
-        while (snake.some(element => element[0] == fruit[0] && element[1] == fruit[1]))
+    let n = () => {
+        do f = [r(), r()]
+        while (s.some(e => e[0] == f[0] && e[1] == f[1]))
     }
 
-    let render = () => {
-        if (game_state != 1) return;
+    let l = () => {
+        if (g != 1) return;
         setTimeout(() => {
-            if (direction.length > 1) direction.shift();
-            let head = [snake[0][0] + direction[0][0], snake[0][1] + direction[0][1]];
-            if (head[0] < 0 || head[0] > 19 || head[1] < 0 || head[1] > 19 || snake.some(element => head[0] == element[0] && head[1] == element[1])) { game_state = 0; return; }
-            snake.unshift(head);
-            if (head[0] == fruit[0] && head[1] == fruit[1]) { score.innerText = parseInt(score.innerText) + 1; make_fruit(); }
-            game_board.fillStyle = "black";
-            game_board.fillRect(0, 0, 360, 360);
-            snake.forEach(element => {
-                draw_pixel("lightgreen", element);
+            if (d.length > 1) d.shift();
+            let h = [s[0][0] + d[0][0], s[0][1] + d[0][1]];
+            if (h[0] < 0 || h[0] > 19 || h[1] < 0 || h[1] > 19 || s.some(e => h[0] == e[0] && h[1] == e[1])) { g = 0; return; }
+            s.unshift(h);
+            if (h[0] == f[0] && h[1] == f[1]) { a.innerText = parseInt(a.innerText) + 1; n(); }
+            b.fillStyle = "black";
+            b.fillRect(0, 0, 360, 360);
+            s.forEach(e => {
+                x("lightgreen", e);
             });
-            draw_pixel("orange", fruit);
-            render();
+            x("orange", f);
+            l();
         }, 200)
     }
 
-    let change_direction = (d) => {
-        if (d[0] != direction.at(-1)[0] && d[1] != direction.at(-1)[1]) direction.push(d);
+    let t = (e) => {
+        if (e[0] != d.at(-1)[0] && e[1] != d.at(-1)[1]) d.push(e);
     }
 
-    let toggle_play_pause_start = () => {
-        if (game_state == 0) {
-            score.innerText = 0;
-            snake = [[10, 10], [10, 11], [10, 12], [10, 13], [10, 14]];
-            direction = [[0, -1]];
-            make_fruit();
-            game_state = 1;
-            render()
+    let p = () => {
+        if (g == 0) {
+            a.innerText = 0;
+            s = [[10, 10], [10, 11], [10, 12], [10, 13], [10, 14]];
+            d = [[0, -1]];
+            n();
+            g = 1;
+            l()
         }
-        else if (game_state == 1) game_state = 2;
-        else { game_state = 1; render() }
+        else if (g == 1) g = 2;
+        else { g = 1; l() }
     }
 
     document.addEventListener("keydown", (e) => {
         switch (e.key) {
             case "Enter":
-                toggle_play_pause_start(); break;
+                p(); break;
             case "ArrowUp":
-                change_direction([0, -1]); break;
+                t([0, -1]); break;
             case "ArrowDown":
-                change_direction([0, 1]); break;
+                t([0, 1]); break;
             case "ArrowLeft":
-                change_direction([-1, 0]); break;
+                t([-1, 0]); break;
             case "ArrowRight":
-                change_direction([1, 0]); break;
+                t([1, 0]); break;
         }
     })
 
