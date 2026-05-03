@@ -1,0 +1,43 @@
+<style>
+    button {
+        width: 60px;
+        height: 60px;
+        font-size: 15;
+        margin: 2px;
+        border: none;
+        border-radius: 10px;
+        background-color: white
+    }
+
+    .container {
+        padding: 10px;
+        width: 360px;
+        background-color: black;
+        color: white;
+        border-radius: 10px;
+    }
+
+    .column {
+        display: flex;
+        flex-direction: column;
+        align-items: center
+    }
+
+    .row {
+        display: flex;
+        align-items: center;
+        gap: 60px;
+    }
+</style>
+<div class="container">
+    <canvas width="360" height="360" style="border: 2p solid white;"></canvas>
+    <p>Score: <span>0</span></p>
+    <div class="column">
+        <button>U</button>
+        <div class="row">
+            <button>L</button>
+            <button>R</button>
+        </div>
+        <button>D</button>
+    </div>
+</div>
