@@ -9,33 +9,19 @@
         background-color: white
     }
 
-    .container {
-        padding: 10px;
-        width: 360px;
-        background-color: black;
-        color: white;
-        border-radius: 10px;
-    }
-
-    .column {
-        display: flex;
-        flex-direction: column;
-        align-items: center
-    }
-
-    .row {
+    .r {
         display: flex;
         align-items: center;
         gap: 60px;
     }
 </style>
-<div class="container">
+<div style="padding:10px;width:360px;background-color:black;color:white;border-radius: 10px">
     <canvas width="360" height="360" style="border: 2px solid white;"></canvas>
     <p>Score: <span>0</span></p>
-    <div class="row">
-        <div class="column">
+    <div class="r">
+        <div style="display:flex;flex-direction:column;align-items:center">
             <button onclick="change_direction([0, -1])">U</button>
-            <div class="row">
+            <div class="r">
                 <button onclick="change_direction([-1, 0])">L</button>
                 <button onclick="change_direction([1, 0])">R</button>
             </div>
@@ -45,26 +31,33 @@
     </div>
 </div>
 <script>
+    /*
+    variables and function names:
+    game_board
+    score
+    snake{element, head}
+    fruit
+    direction
+    game_state
+    
+    draw_pixel(color, position)
+    random_number
+    make_fruit
+    render
+    change_direction(d)
+    toggle_play_pause_start
+    */
     let game_board = document.querySelector("canvas").getContext("2d");
     let score = document.querySelector("span");
 
     let snake;
     let fruit;
     let direction = [];
-    let game_state = 0; // 0 = dead, 1 = playing, 2 = paused
+    let game_state = 0;
 
     let draw_pixel = (color, position) => {
         game_board.fillStyle = color;
         game_board.fillRect(position[0] * 18, position[1] * 18, 18, 18);
-    }
-
-    let render_board = () => {
-        game_board.fillStyle = "black";
-        game_board.fillRect(0, 0, 360, 360);
-        snake.forEach(element => {
-            draw_pixel("lightgreen", element);
-        });
-        draw_pixel("orange", fruit);
     }
 
     let random_number = () => Math.floor(Math.random() * 20)
@@ -78,23 +71,16 @@
         if (game_state != 1) return;
         setTimeout(() => {
             if (direction.length > 1) direction.shift();
-            // get head of snake after the move
             let head = [snake[0][0] + direction[0][0], snake[0][1] + direction[0][1]];
-
-            // check for collisions
             if (head[0] < 0 || head[0] > 19 || head[1] < 0 || head[1] > 19 || snake.some(element => head[0] == element[0] && head[1] == element[1])) { game_state = 0; return; }
-
-            // add head to snake
             snake.unshift(head);
-
-            // check for collision with fruit
             if (head[0] == fruit[0] && head[1] == fruit[1]) { score.innerText = parseInt(score.innerText) + 1; make_fruit(); }
-            else snake.pop();
-
-            // render
-            render_board();
-
-            // recursive call
+            game_board.fillStyle = "black";
+            game_board.fillRect(0, 0, 360, 360);
+            snake.forEach(element => {
+                draw_pixel("lightgreen", element);
+            });
+            draw_pixel("orange", fruit);
             render();
         }, 200)
     }
@@ -103,17 +89,15 @@
         if (d[0] != direction.at(-1)[0] && d[1] != direction.at(-1)[1]) direction.push(d);
     }
 
-    let start_game = () => {
-        score.innerText = 0;
-        snake = [[10, 10], [10, 11], [10, 12], [10, 13], [10, 14]];
-        direction = [[0, -1]];
-        make_fruit();
-        game_state = 1;
-        render()
-    }
-
     let toggle_play_pause_start = () => {
-        if (game_state == 0) start_game();
+        if (game_state == 0) {
+            score.innerText = 0;
+            snake = [[10, 10], [10, 11], [10, 12], [10, 13], [10, 14]];
+            direction = [[0, -1]];
+            make_fruit();
+            game_state = 1;
+            render()
+        }
         else if (game_state == 1) game_state = 2;
         else { game_state = 1; render() }
     }
