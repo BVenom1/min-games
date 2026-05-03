@@ -32,13 +32,16 @@
 <div class="container">
     <canvas width="360" height="360" style="border: 2px solid white;"></canvas>
     <p>Score: <span>0</span></p>
-    <div class="column">
-        <button onclick="change_direction([0, -1])">U</button>
-        <div class="row">
-            <button onclick="change_direction([-1, 0])">L</button>
-            <button onclick="change_direction([1, 0])">R</button>
+    <div class="row">
+        <div class="column">
+            <button onclick="change_direction([0, -1])">U</button>
+            <div class="row">
+                <button onclick="change_direction([-1, 0])">L</button>
+                <button onclick="change_direction([1, 0])">R</button>
+            </div>
+            <button onclick="change_direction([0, 1])">D</button>
         </div>
-        <button onclick="change_direction([0, 1])">D</button>
+        <button onclick="toggle_play_pause_start()">Play/Pause</button>
     </div>
 </div>
 <script>
@@ -116,10 +119,15 @@
         if (snake) render();
     }
 
+    let toggle_play_pause_start = () => {
+        if (is_alive) pause_play();
+        else start_game();
+    }
+
     document.addEventListener("keydown", (e) => {
         switch (e.key) {
             case "Enter":
-                if (is_alive) pause_play(); else start_game(); break;
+                toggle_play_pause_start(); break;
             case "ArrowUp":
                 change_direction([0, -1]); break;
             case "ArrowDown":
